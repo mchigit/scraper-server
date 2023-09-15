@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  # api:
+  #   build: .
+  #   ports:
+  #     - "4000:3000"
+  #   command: yarn dev
+  chrome:
+    image: browserless/chrome
+    environment:
+      - DEFAULT_BLOCK_ADS=true
+      - DEFAULT_HEADLESS=true
+      - DEFAULT_IGNORE_HTTPS_ERRORS=true
+      - MAX_CONCURRENT_SESSIONS=10
+      - PREBOOT_CHROME=true
+      - KEEP_ALIVE=true
+      - ENABLE_CORS=true
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./src/scrapers/images:/images
