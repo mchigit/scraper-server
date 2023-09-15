@@ -18,5 +18,3 @@ services:
       - ENABLE_CORS=true
     ports:
       - "3001:3000"
-    volumes:
-      - ./src/scrapers/images:/images

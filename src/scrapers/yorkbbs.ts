@@ -150,8 +150,6 @@ export const createYorkBbsRental = async (
         await imageUploadHandle.uploadFile(image.path);
       })
     );
-    // await imageUploadHandle.uploadFile("/images/1.jpeg");
-    // await imageUploadHandle.uploadFile("/images/2.jpeg");
 
     await page.waitForNetworkIdle();
   }
@@ -182,8 +180,6 @@ export const createYorkbbsForumPost = async (
         await imageUploadHandle.uploadFile(image.path);
       })
     );
-    // await imageUploadHandle.uploadFile("/images/1.jpeg");
-    // await imageUploadHandle.uploadFile("/images/2.jpeg");
 
     await page.waitForNetworkIdle();
   }
