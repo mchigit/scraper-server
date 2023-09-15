@@ -1,7 +1,5 @@
-import fs from "fs";
 import { Router, Request, Response } from "express";
 
-import { CHROME_ENDPOINT } from "../constants";
 import { create51Rental, loginTo51 } from "../scrapers/wuyao";
 import {
   createYorkBbsRental,
@@ -9,7 +7,6 @@ import {
   loginToYorkbbs,
 } from "../scrapers/yorkbbs";
 import { YorkbbsReqDataType } from "../types";
-import { uploadImageBlobs } from "../utils/imageUtils";
 import { PuppeteerBrowser } from "../utils/chrome";
 
 const router = Router();

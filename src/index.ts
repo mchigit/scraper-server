@@ -1,5 +1,6 @@
 import express from "express";
 import adsRouter from "./routes/ads";
+import xiaohongshuRouter from "./routes/xiaohongshu";
 import cors from "cors";
 import { PuppeteerBrowser } from "./utils/chrome";
 
@@ -14,6 +15,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/ads", adsRouter);
+
+app.use("/xiaohongshu", xiaohongshuRouter);
 
 const server = app.listen(PORT, () => {
   console.log(`Express server is listening at ${PORT}`);
