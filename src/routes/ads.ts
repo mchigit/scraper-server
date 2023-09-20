@@ -49,13 +49,10 @@ router.post(
 
       const images = body.images;
 
-      //   const imageResults = await uploadImageBlobs(images);
-      //   await uploadImage
-
       await loginToYorkbbs(page);
       await createYorkBbsRental(page, body, images);
 
-      //   await page.click("button.form-button__submit");
+      await page.click("button.form-button__submit");
 
       await page.waitForNavigation();
 
@@ -92,25 +89,14 @@ router.post(
       await page.goto("https://forum.yorkbbs.ca/publish/houserental");
 
       await createYorkbbsForumPost(page, req.body);
-      //   const images = body.images;
 
-      //   const imageResults = await uploadImageBlobs(images);
-      //   await uploadImage
+      const footerBtns = await page.$$(".editor-footer__right button");
 
-      // await loginToYorkbbs(page);
-      // await createYorkbbsRental(page, body, images);
+      if (footerBtns.length === 2) {
+        await footerBtns[1].click();
+      }
 
-      //   await page.click("button.form-button__submit");
-
-      //   await page.waitForNavigation();
-
-      //   const footerBtns = await page.$$(".editor-footer__right button");
-
-      //   if (footerBtns.length === 2) {
-      //     await footerBtns[1].click();
-      //   }
-
-      //   await page.waitForNavigation();
+      await page.waitForNavigation();
 
       const response = await page.screenshot({ fullPage: true });
 

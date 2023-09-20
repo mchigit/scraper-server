@@ -89,14 +89,14 @@ export const createYorkBbsRental = async (
     body.phone
   );
 
-  await page.evaluate((houseData) => {
+  await page.evaluate((description) => {
     const descriptionInput = document.querySelector<HTMLParagraphElement>(
       ".editor-txt-content p"
     );
     if (descriptionInput) {
-      descriptionInput.innerHTML = houseData.description;
+      descriptionInput.innerHTML = description;
     }
-  }, houseData);
+  }, body.description);
 
   const allCheckboxes = await page.$$(".el-checkbox__inner");
   const features = body.features;
