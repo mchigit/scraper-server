@@ -20,7 +20,7 @@ export const uploadImageBlobs = async (
     filename: string;
   }>
 ) => {
-  const uploadEndpoint = `${CHROME_ENDPOINT_HTTPS}/workspace`;
+  const uploadEndpoint = `${CHROME_ENDPOINT_HTTPS}/workspace?token=${process.env.CHROME_TOKEN}`;
 
   const newFormData = new FormData();
   images.forEach((image) => {

@@ -1,7 +1,7 @@
 import { HouseType, wuyaoRentalType } from "./types";
 
-export const CHROME_ENDPOINT = "ws://localhost:3001/?stealth";
-export const CHROME_ENDPOINT_HTTPS = "http://localhost:3001";
+export const CHROME_ENDPOINT = `ws://134.209.220.45:3000/?stealth&token=${process.env.CHROME_TOKEN}`;
+export const CHROME_ENDPOINT_HTTPS = "http://134.209.220.45:3000";
 
 export const houseData = {
   postalCode: "L4J 7X1",

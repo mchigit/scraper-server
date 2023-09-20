@@ -103,9 +103,6 @@ export const createYorkBbsRental = async (
   if (features.length > 0) {
     await Promise.all(
       features.map(async (feature) => {
-        console.log(
-          YorkbbsFeaturesMap[feature as keyof typeof YorkbbsFeaturesMap] + 2
-        );
         await allCheckboxes[
           // Hack to skip first 2 checkboxes
           YorkbbsFeaturesMap[feature as keyof typeof YorkbbsFeaturesMap] + 2
@@ -170,7 +167,7 @@ export const createYorkbbsForumPost = async (
       descriptionHtml.innerHTML = description;
       descriptionInput.prepend(descriptionHtml);
     }
-  }, body.description);
+  }, body.htmlDescription);
 
   const imageUploadHandle = await page.$('input[type="file"].img-file');
 
@@ -182,11 +179,5 @@ export const createYorkbbsForumPost = async (
     );
 
     await page.waitForNetworkIdle();
-  }
-
-  const footerBtns = await page.$$(".editor-footer__right button");
-
-  if (footerBtns.length === 2) {
-    await footerBtns[1].click();
   }
 };

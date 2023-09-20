@@ -53,4 +53,5 @@ export type YorkbbsReqDataType = {
     date: string;
   };
   images: WorkspaceUploadResponse[];
+  htmlDescription: string;
 };

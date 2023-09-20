@@ -27,7 +27,7 @@ router.post("/wuyao", async (req: Request, res: Response) => {
     });
     res.end(response);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({
       message: "Internal Server Error",
     });
@@ -55,7 +55,7 @@ router.post(
       await loginToYorkbbs(page);
       await createYorkBbsRental(page, body, images);
 
-      await page.click("button.form-button__submit");
+      //   await page.click("button.form-button__submit");
 
       await page.waitForNavigation();
 
@@ -67,7 +67,7 @@ router.post(
       });
       res.end(response);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       res.status(500).json({
         message: "Internal Server Error",
       });
@@ -104,6 +104,14 @@ router.post(
 
       //   await page.waitForNavigation();
 
+      //   const footerBtns = await page.$$(".editor-footer__right button");
+
+      //   if (footerBtns.length === 2) {
+      //     await footerBtns[1].click();
+      //   }
+
+      //   await page.waitForNavigation();
+
       const response = await page.screenshot({ fullPage: true });
 
       res.writeHead(200, {
@@ -112,7 +120,7 @@ router.post(
       });
       res.end(response);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       res.status(500).json({
         message: "Internal Server Error",
       });
