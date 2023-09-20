@@ -1,7 +1,6 @@
 import { Page } from "puppeteer-core";
 import { YorkbbsFeaturesMap, houseData } from "../constants";
-import { YorkbbsReqDataType } from "../types";
-import { WorkspaceUploadResponse } from "../utils/imageUtils";
+import { WorkspaceUploadResponse, YorkbbsReqDataType } from "../types";
 
 const username = "wuhui8013";
 const pass = "google@88";

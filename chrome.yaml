@@ -1,0 +1,14 @@
+services:
+  chrome:
+    image: browserless/chrome
+    restart: always
+    environment:
+      - DEFAULT_BLOCK_ADS=true
+      - DEFAULT_HEADLESS=true
+      - DEFAULT_IGNORE_HTTPS_ERRORS=true
+      - MAX_CONCURRENT_SESSIONS=10
+      - PREBOOT_CHROME=true
+      - KEEP_ALIVE=true
+      - CONNECTION_TIMEOUT=60000
+    ports:
+      - "3000:3000"

@@ -1,5 +1,3 @@
-import { WorkspaceUploadResponse } from "./utils/imageUtils";
-
 export enum HouseType {
   Condo = "Condo",
   House = "House",
@@ -32,6 +30,17 @@ export enum wuyaoRentalType {
   resort = "resort",
   storage = "storage",
 }
+
+export type WorkspaceUploadResponse = {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  destination: string;
+  filename: string;
+  path: string;
+  size: number;
+};
 
 export type YorkbbsReqDataType = {
   adAddress: string;
