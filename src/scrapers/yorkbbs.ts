@@ -8,7 +8,7 @@ const nickname = "M. Cai";
 const phone = "647-136-8013";
 
 export const loginToYorkbbs = async (page: Page) => {
-  await page.goto("https://house.yorkbbs.ca/");
+  await page.goto("https://account.yorkbbs.ca/login");
 
   const cookies = await page.cookies();
   if (cookies.length > 0) {
@@ -19,14 +19,13 @@ export const loginToYorkbbs = async (page: Page) => {
     }
   }
 
-  await page.click(".el-button.el-button--danger.el-button--medium");
-
   await page.type('input[placeholder="用户名/ Email"]', username);
   await page.type('input[placeholder="密码"]', pass);
 
   await page.keyboard.press("Enter");
 
   await page.waitForSelector(".image-fit.header-user__avatar");
+  // await page.waitForNavigation();
 };
 
 const getUnitTypeString = (unitType: string) => {

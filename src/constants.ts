@@ -1,8 +1,6 @@
 import { HouseType, wuyaoRentalType } from "./types";
 
-export const CHROME_ENDPOINT = `wss://headless-chrome-9wnx7.ondigitalocean.app/?stealth`;
-export const CHROME_ENDPOINT_HTTPS =
-  "https://headless-chrome-9wnx7.ondigitalocean.app/";
+export const CHROME_ENDPOINT = `wss://chrome.browserless.io?token=${process.env.CHROME_TOKEN}`;
 
 export const houseData = {
   postalCode: "L4J 7X1",
