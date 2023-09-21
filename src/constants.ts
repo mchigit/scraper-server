@@ -1,6 +1,6 @@
 import { HouseType, wuyaoRentalType } from "./types";
 
-export const CHROME_ENDPOINT = `wss://chrome.browserless.io?token=${process.env.CHROME_TOKEN}`;
+export const CHROME_ENDPOINT = `wss://chrome-owsvvszy6q-ue.a.run.app`;
 
 export const houseData = {
   postalCode: "L4J 7X1",
