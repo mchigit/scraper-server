@@ -33,15 +33,15 @@ export class PuppeteerBrowser {
     }
 
     const page = await PuppeteerBrowser.browser.newPage();
-    await page.setRequestInterception(true);
+    // await page.setRequestInterception(true);
 
-    page.on("request", (request) => {
-      if (["image", "font"].indexOf(request.resourceType()) !== -1) {
-        request.abort();
-      } else {
-        request.continue();
-      }
-    });
+    // page.on("request", (request) => {
+    //   if (["image", "font"].indexOf(request.resourceType()) !== -1) {
+    //     request.abort();
+    //   } else {
+    //     request.continue();
+    //   }
+    // });
     await page.setUserAgent(userAgent.toString());
 
     return page;
