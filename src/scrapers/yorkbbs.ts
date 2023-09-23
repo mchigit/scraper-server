@@ -1,11 +1,9 @@
-import { Page } from "puppeteer-core";
+import { ElementHandle, Page } from "puppeteer-core";
 import { YorkbbsFeaturesMap, houseData } from "../constants";
 import { WorkspaceUploadResponse, YorkbbsReqDataType } from "../types";
 
 const username = "wuhui8013";
 const pass = "google@88";
-const nickname = "M. Cai";
-const phone = "647-136-8013";
 
 export const loginToYorkbbs = async (page: Page) => {
   await page.goto("https://account.yorkbbs.ca/login");
@@ -76,16 +74,47 @@ export const createYorkBbsRental = async (
 
   const addressInput = await page.$('input[placeholder="请输入内容"]');
   if (body.adUnit) {
-    await addressInput?.type(`${body.adUnit} - ${body.adAddress} `);
+    await addressInput?.type(
+      `${body.adUnit} - ${body.adAddress}, ${body.adCity} `
+    );
   } else {
-    await addressInput?.type(body.adAddress);
+    await addressInput?.type(`${body.adAddress}, ${body.adCity}`);
   }
 
-  await page.type('input[placeholder="联系人名称"]', body.contact);
-  await page.type(
-    'input[placeholder="请输入10位电话号码，如 000 000 0000"]',
-    body.phone
+  await page.waitForTimeout(3000);
+  while (true) {
+    const suggestions = await page.$$(".el-autocomplete-suggestion__list li");
+    if (suggestions.length > 0) {
+      await suggestions[0].click();
+      break;
+    }
+
+    await page.waitForTimeout(1000);
+  }
+
+  const contactInput = await page.$('input[placeholder="联系人名称"]');
+  if (contactInput) {
+    const currentValue = await page.evaluate((x) => x.value, contactInput);
+    if (currentValue.length === 0) {
+      await page.type('input[placeholder="联系人名称"]', body.contact);
+    }
+  }
+
+  const phoneInput = await page.$(
+    'input[placeholder="请输入10位电话号码，如 000 000 0000"]'
   );
+  if (phoneInput) {
+    const currentValue = await page.evaluate(
+      (x) => x.value,
+      phoneInput as ElementHandle<HTMLInputElement>
+    );
+    if (currentValue.length === 0) {
+      await page.type(
+        'input[placeholder="请输入10位电话号码，如 000 000 0000"]',
+        body.phone
+      );
+    }
+  }
 
   await page.evaluate((description) => {
     const descriptionInput = document.querySelector<HTMLParagraphElement>(
@@ -110,7 +139,10 @@ export const createYorkBbsRental = async (
   }
 
   if (body.moveinDate.asap) {
-    await allCheckboxes[1].click();
+    const checkboxes = await page.$$(".el-checkbox");
+    if (checkboxes.length > 2) {
+      await checkboxes[1].click();
+    }
   } else {
     await page.type(
       'input[placeholder="请选择入住时间"]',

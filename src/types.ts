@@ -45,6 +45,7 @@ export type WorkspaceUploadResponse = {
 export type YorkbbsReqDataType = {
   adAddress: string;
   adTitle: string;
+  adCity: string;
   bathRomms: number;
   bedrooms: number;
   description: string;
