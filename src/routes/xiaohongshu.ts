@@ -7,6 +7,8 @@ router.get("/", async (req, res) => {
   try {
     const page = await PuppeteerBrowser.getNewPage();
 
+    if (!page) throw new Error("Failed to get new page");
+
     await page.goto("https://www.xiaohongshu.com/");
     await page.waitForSelector(".login-container");
 

@@ -18,15 +18,24 @@ app.get("/", (req, res) => {
 
 app.get("/test", async (req, res) => {
   const page = await PuppeteerBrowser.getNewPage();
-  await page.goto("https://www.xiaohongshu.com/");
 
-  const response = await page.screenshot({ fullPage: true });
+  if (page) {
+    await page.goto("https://www.xiaohongshu.com/");
 
-  res.writeHead(200, {
-    "Content-Type": "image/png", // or 'image/jpg', 'image/gif', etc.
-    "Content-Length": response.length,
+    const response = await page.screenshot({ fullPage: true });
+
+    res.writeHead(200, {
+      "Content-Type": "image/png", // or 'image/jpg', 'image/gif', etc.
+      "Content-Length": response.length,
+    });
+    res.end(response);
+
+    return;
+  }
+
+  res.status(500).json({
+    message: "Internal Server Error",
   });
-  res.end(response);
 });
 
 app.use("/ads", adsRouter);

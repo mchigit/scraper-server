@@ -15,6 +15,8 @@ router.post("/wuyao", async (req: Request, res: Response) => {
   try {
     const page = await PuppeteerBrowser.getNewPage();
 
+    if (!page) throw new Error("Failed to get new page");
+
     await loginTo51(page);
 
     await create51Rental(page);
@@ -46,7 +48,7 @@ router.post(
       }
 
       const page = await PuppeteerBrowser.getNewPage();
-
+      if (!page) throw new Error("Failed to get new page");
       const images = body.images;
 
       await loginToYorkbbs(page);
@@ -84,6 +86,8 @@ router.post(
       //   }
 
       const page = await PuppeteerBrowser.getNewPage();
+
+      if (!page) throw new Error("Failed to get new page");
 
       await loginToYorkbbs(page);
       await page.goto("https://forum.yorkbbs.ca/publish/houserental");

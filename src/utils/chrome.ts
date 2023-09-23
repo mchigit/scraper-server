@@ -24,27 +24,33 @@ export class PuppeteerBrowser {
   private static browser: Browser | null = null;
 
   static async getNewPage() {
-    if (!PuppeteerBrowser.browser) {
-      console.log("Launching Chrome...", CHROME_ENDPOINT);
-      PuppeteerBrowser.browser = await puppeteer.connect({
-        browserWSEndpoint: CHROME_ENDPOINT,
-        ignoreHTTPSErrors: true,
-      });
+    try {
+      if (!PuppeteerBrowser.browser) {
+        console.log("Launching Chrome...", CHROME_ENDPOINT);
+        PuppeteerBrowser.browser = await puppeteer.connect({
+          browserWSEndpoint: CHROME_ENDPOINT,
+          ignoreHTTPSErrors: true,
+        });
+      }
+
+      const page = await PuppeteerBrowser.browser.newPage();
+      // await page.setRequestInterception(true);
+
+      // page.on("request", (request) => {
+      //   if (["image", "font"].indexOf(request.resourceType()) !== -1) {
+      //     request.abort();
+      //   } else {
+      //     request.continue();
+      //   }
+      // });
+      await page.setUserAgent(userAgent.toString());
+
+      return page;
+    } catch (error) {
+      if (PuppeteerBrowser.browser) {
+        PuppeteerBrowser.browser.disconnect();
+      }
     }
-
-    const page = await PuppeteerBrowser.browser.newPage();
-    // await page.setRequestInterception(true);
-
-    // page.on("request", (request) => {
-    //   if (["image", "font"].indexOf(request.resourceType()) !== -1) {
-    //     request.abort();
-    //   } else {
-    //     request.continue();
-    //   }
-    // });
-    await page.setUserAgent(userAgent.toString());
-
-    return page;
   }
 
   static async close() {
