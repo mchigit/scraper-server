@@ -24,7 +24,10 @@ export class PuppeteerBrowser {
 
       const page = await PuppeteerBrowser.browser.newPage();
 
-      await page.emulate(KnownDevices["iPhone 11 Pro Max landscape"]);
+      await page.setViewport({
+        width: 1920,
+        height: 1080,
+      });
       await page.setUserAgent(userAgent.toString());
 
       return page;
