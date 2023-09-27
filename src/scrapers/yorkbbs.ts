@@ -155,7 +155,7 @@ export const createYorkBbsRental = async (
   textToLookFor.push(getUnitTypeString(body.unitType));
   textToLookFor.push("整租");
   textToLookFor.push(getBedroomString(body.bedrooms));
-  textToLookFor.push(getBathroomString(body.bathRomms));
+  textToLookFor.push(getBathroomString(body.bathRooms));
 
   await page.evaluate((textToLookFor) => {
     const allRadios = document.querySelectorAll<HTMLLabelElement>(

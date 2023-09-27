@@ -46,7 +46,7 @@ export type YorkbbsReqDataType = {
   adAddress: string;
   adTitle: string;
   adCity: string;
-  bathRomms: number;
+  bathRooms: number;
   bedrooms: number;
   description: string;
   rent: number;
