@@ -65,3 +65,10 @@ export type YorkbbsReqDataType = {
   images: WorkspaceUploadResponse[];
   htmlDescription: string;
 };
+
+export type KijijiReqDataType = {
+  adTitle: string;
+  rent: number;
+  description: string;
+  unitType: string;
+};

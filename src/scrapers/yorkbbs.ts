@@ -1,9 +1,9 @@
 import { ElementHandle, Page } from "puppeteer-core";
-import { YorkbbsFeaturesMap, houseData } from "../constants";
+import { YorkbbsFeaturesMap } from "../constants";
 import { WorkspaceUploadResponse, YorkbbsReqDataType } from "../types";
 
-const username = "wuhui8013";
-const pass = "google@88";
+const username = "xiaoki";
+const pass = "wuhui@8866";
 
 export const loginToYorkbbs = async (page: Page) => {
   await page.goto("https://account.yorkbbs.ca/login");
