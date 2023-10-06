@@ -6,6 +6,7 @@ import xiaohongshuRouter from "./routes/xiaohongshu";
 import goodlifeRouter from "./routes/goodlife";
 import cors from "cors";
 import { generateDescription } from "./openAi";
+import { PuppeteerBrowser } from "./utils/chrome";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -52,6 +53,34 @@ app.post("/test", async (req, res) => {
   res.status(500).json({
     message: "Internal Server Error",
   });
+});
+
+app.get("/scrape-data", async (req, res) => {
+  try {
+    const page = await PuppeteerBrowser.getNewPage();
+
+    if (!page) throw new Error("Failed to get new page");
+
+    await page.goto("https://cbaapps.org/ClassAction/Search.aspx");
+    await page.waitForSelector("#BtnSearch");
+
+    await page.click("#BtnSearch");
+
+    await page.waitForNetworkIdle();
+
+    const response = await page.screenshot({ fullPage: true });
+
+    res.writeHead(200, {
+      "Content-Type": "image/png", // or 'image/jpg', 'image/gif', etc.
+      "Content-Length": response.length,
+    });
+    res.end(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
 });
 
 app.use("/ads", adsRouter);
