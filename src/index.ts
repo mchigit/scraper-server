@@ -5,7 +5,7 @@ import adsRouter from "./routes/ads";
 import xiaohongshuRouter from "./routes/xiaohongshu";
 import goodlifeRouter from "./routes/goodlife";
 import cors from "cors";
-import { PuppeteerBrowser } from "./utils/chrome";
+import { generateDescription } from "./openAi";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -17,21 +17,36 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.get("/test", async (req, res) => {
-  const page = await PuppeteerBrowser.getNewPage();
+app.post("/rental-description", async (req, res) => {
+  try {
+    const data = req.body;
+    const generatedDescription = await generateDescription(data);
 
-  if (page) {
-    await page.goto("https://www.xiaohongshu.com/");
+    if (generatedDescription) {
+      return res.json({
+        description: JSON.parse(generatedDescription),
+      });
+    }
 
-    const response = await page.screenshot({ fullPage: true });
-
-    res.writeHead(200, {
-      "Content-Type": "image/png", // or 'image/jpg', 'image/gif', etc.
-      "Content-Length": response.length,
+    res.status(500).json({
+      message: "Internal Server Error",
     });
-    res.end(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+});
 
-    return;
+app.post("/test", async (req, res) => {
+  const data = req.body;
+  const generatedDescription = await generateDescription(data);
+
+  if (generatedDescription) {
+    return res.json({
+      description: JSON.parse(generatedDescription),
+    });
   }
 
   res.status(500).json({
