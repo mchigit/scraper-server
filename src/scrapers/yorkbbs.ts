@@ -95,9 +95,15 @@ export const createYorkBbsRental = async (
   const contactInput = await page.$('input[placeholder="联系人名称"]');
   if (contactInput) {
     const currentValue = await page.evaluate((x) => x.value, contactInput);
-    if (currentValue.length === 0) {
-      await page.type('input[placeholder="联系人名称"]', body.contact);
+
+    if (currentValue.length > 0) {
+      await contactInput.click();
+      for (let i = 0; i < currentValue.length; i++) {
+        await page.keyboard.press("Backspace");
+      }
     }
+
+    await page.type('input[placeholder="联系人名称"]', body.contact);
   }
 
   const phoneInput = await page.$(
@@ -108,12 +114,17 @@ export const createYorkBbsRental = async (
       (x) => x.value,
       phoneInput as ElementHandle<HTMLInputElement>
     );
-    if (currentValue.length === 0) {
-      await page.type(
-        'input[placeholder="请输入10位电话号码，如 000 000 0000"]',
-        body.phone
-      );
+    if (currentValue.length > 0) {
+      await phoneInput.click();
+      for (let i = 0; i < currentValue.length; i++) {
+        await page.keyboard.press("Backspace");
+      }
     }
+
+    await page.type(
+      'input[placeholder="请输入10位电话号码，如 000 000 0000"]',
+      body.phone
+    );
   }
 
   await page.evaluate((description) => {
