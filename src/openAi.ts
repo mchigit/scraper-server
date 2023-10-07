@@ -22,12 +22,7 @@ export const generateDescription = async (jsonData: Record<string, any>) => {
       {
         role: "system",
         content:
-          "You will keep the description visually clean by adding line breaks (\n) between each point.",
-      },
-      {
-        role: "system",
-        content:
-          "Return only the generated description in JSON formats. The json should have 2 keys, descriptionEn and descriptionZh, with description as values. The value should maintain the \n characters so it can be rendered in a wysiwyg editor, combine both versions into a single json. ",
+          "Return only the generated description in JSON formats. The json should have 2 keys, descriptionEn and descriptionZh, with description as values. Combine both versions into a single json. ",
       },
       {
         role: "user",
@@ -37,5 +32,39 @@ export const generateDescription = async (jsonData: Record<string, any>) => {
   });
 
   console.log(response);
-  return response["choices"][0]["message"]["content"];
+  if (response["choices"][0]["message"]["content"]) {
+    const formattedResponse = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      temperature: 0.9,
+      messages: [
+        {
+          role: "system",
+          content:
+            "You will be given a string that is a JSON object with descriptions. You need to format the descriptions with HTML tags",
+        },
+        {
+          role: "system",
+          content:
+            "The description will be multiple sentences. Separate each setence with <p> tags and add <br> tags to the end of each sentence.",
+        },
+        {
+          role: "system",
+          content:
+            "Return the data in the same JSON format you received it in. But replace the values with formatted descriptions.",
+        },
+        {
+          role: "user",
+          content: response["choices"][0]["message"]["content"],
+        },
+      ],
+    });
+
+    console.log(formattedResponse);
+
+    if (formattedResponse["choices"][0]["message"]["content"]) {
+      return formattedResponse["choices"][0]["message"]["content"];
+    }
+  }
+
+  return null;
 };
