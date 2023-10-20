@@ -41,18 +41,19 @@ app.post("/rental-description", async (req, res) => {
 });
 
 app.post("/test", async (req, res) => {
-  const data = req.body;
-  const generatedDescription = await generateDescription(data);
+  const page = await PuppeteerBrowser.getNewPage();
 
-  if (generatedDescription) {
-    return res.json({
-      description: JSON.parse(generatedDescription),
-    });
-  }
+  if (!page) throw new Error("Failed to get new page");
 
-  res.status(500).json({
-    message: "Internal Server Error",
+  await page.goto("https://cbaapps.org/ClassAction/Search.aspx");
+
+  const response = await page.screenshot({ fullPage: true });
+
+  res.writeHead(200, {
+    "Content-Type": "image/png", // or 'image/jpg', 'image/gif', etc.
+    "Content-Length": response.length,
   });
+  res.end(response);
 });
 
 app.get("/scrape-data", async (req, res) => {

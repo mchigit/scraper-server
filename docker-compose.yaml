@@ -1,0 +1,28 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .  # Build from the current directory (where the Dockerfile is located)
+      dockerfile: Dockerfile  # Use the Dockerfile you previously created
+    ports:
+      - "4000:4000"  # Map container port 3000 to host port 3000
+    volumes:
+      - .:/app  # Mount your current directory into the container to enable live code reloading
+    depends_on:
+      - chrome
+    links:
+      - chrome
+  chrome:
+    image: browserless/chrome
+    restart: always
+    environment:
+      - DEFAULT_BLOCK_ADS=true
+      - DEFAULT_HEADLESS=true
+      - DEFAULT_IGNORE_HTTPS_ERRORS=true
+      - MAX_CONCURRENT_SESSIONS=10
+      - PREBOOT_CHROME=true
+      - KEEP_ALIVE=true
+      - CONNECTION_TIMEOUT=90000
+      - ENABLE_CORS=true
+    ports:
+      - "3001:3000"

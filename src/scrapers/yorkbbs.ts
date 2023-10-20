@@ -2,11 +2,11 @@ import { ElementHandle, Page } from "puppeteer-core";
 import { YorkbbsFeaturesMap } from "../constants";
 import { WorkspaceUploadResponse, YorkbbsReqDataType } from "../types";
 
-// const username = "xiaoki";
-// const pass = "wuhui@8866";
+const username = "xiaoki";
+const pass = "wuhui@8866";
 
-const username = "wuhui8013";
-const pass = "google@88";
+// const username = "wuhui8013";
+// const pass = "google@88";
 
 export const loginToYorkbbs = async (page: Page) => {
   await page.goto("https://account.yorkbbs.ca/login");
