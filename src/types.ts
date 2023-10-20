@@ -66,6 +66,10 @@ export type YorkbbsReqDataType = {
   htmlDescription: string;
 };
 
+export type WuyaoReqDataType = YorkbbsReqDataType & {
+  postalCode: string;
+};
+
 export type KijijiReqDataType = {
   adTitle: string;
   rent: number;

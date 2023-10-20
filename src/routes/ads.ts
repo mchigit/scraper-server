@@ -1,41 +1,58 @@
 import { Router, Request, Response } from "express";
 
-import { create51Rental, loginTo51 } from "../scrapers/wuyao";
+import { create51Rental, loginTo51, loginTo51API } from "../scrapers/wuyao";
 import {
   createYorkBbsRental,
   createYorkbbsForumPost,
   loginToYorkbbs,
 } from "../scrapers/yorkbbs";
-import { KijijiReqDataType, YorkbbsReqDataType } from "../types";
+import {
+  KijijiReqDataType,
+  WuyaoReqDataType,
+  YorkbbsReqDataType,
+} from "../types";
 import { PuppeteerBrowser } from "../utils/chrome";
 import { createLongtermRental, loginToKijiji } from "../scrapers/kijiji";
 
 const router = Router();
 
-router.post("/wuyao", async (req: Request, res: Response) => {
-  try {
-    const page = await PuppeteerBrowser.getNewPage();
+router.post(
+  "/wuyao",
+  async (req: Request<any, any, WuyaoReqDataType>, res: Response) => {
+    const body = req.body;
+    if (!body) {
+      return res.status(400).json({
+        message: "Invalid request body",
+      });
+    }
 
-    if (!page) throw new Error("Failed to get new page");
+    try {
+      // const page = await PuppeteerBrowser.getNewPage();
+      // if (!page) throw new Error("Failed to get new page");
 
-    await loginTo51(page);
+      await loginTo51API();
 
-    await create51Rental(page);
+      // await create51Rental(page, body);
 
-    const response = await page.screenshot({ fullPage: true });
+      // const response = await page.screenshot({ fullPage: true });
 
-    res.writeHead(200, {
-      "Content-Type": "image/png", // or 'image/jpg', 'image/gif', etc.
-      "Content-Length": response.length,
-    });
-    res.end(response);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Internal Server Error",
-    });
+      // res.writeHead(200, {
+      //   "Content-Type": "image/png", // or 'image/jpg', 'image/gif', etc.
+      //   "Content-Length": response.length,
+      // });
+      // res.end(response);
+
+      res.status(200).json({
+        message: "Success",
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        message: "Internal Server Error",
+      });
+    }
   }
-});
+);
 
 router.post(
   "/yorkbbs",
