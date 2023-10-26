@@ -1,6 +1,11 @@
 import { Router, Request, Response } from "express";
 
-import { create51Rental, loginTo51, loginTo51API } from "../scrapers/wuyao";
+import {
+  create51Rental,
+  create51RentalApi,
+  loginTo51,
+  loginTo51API,
+} from "../scrapers/wuyao";
 import {
   createYorkBbsRental,
   createYorkbbsForumPost,
@@ -19,19 +24,20 @@ const router = Router();
 router.post(
   "/wuyao",
   async (req: Request<any, any, WuyaoReqDataType>, res: Response) => {
-    const body = req.body;
-    if (!body) {
-      return res.status(400).json({
-        message: "Invalid request body",
-      });
-    }
+    // const body = req.body;
+    // if (!body) {
+    //   return res.status(400).json({
+    //     message: "Invalid request body",
+    //   });
+    // }
 
     try {
-      // const page = await PuppeteerBrowser.getNewPage();
-      // if (!page) throw new Error("Failed to get new page");
+      const page = await PuppeteerBrowser.getNewPage();
+      if (!page) throw new Error("Failed to get new page");
 
-      await loginTo51API();
+      await loginTo51(page);
 
+      await create51RentalApi(page);
       // await create51Rental(page, body);
 
       // const response = await page.screenshot({ fullPage: true });

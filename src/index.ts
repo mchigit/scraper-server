@@ -1,12 +1,17 @@
 import "dotenv/config";
 
-import express from "express";
+import express, { Request, Response } from "express";
 import adsRouter from "./routes/ads";
 import xiaohongshuRouter from "./routes/xiaohongshu";
 import goodlifeRouter from "./routes/goodlife";
 import cors from "cors";
 import { generateDescription } from "./openAi";
 import { PuppeteerBrowser } from "./utils/chrome";
+import { PDFDocument } from "pdf-lib";
+import fs from "fs";
+import path from "path";
+import { LeaseAgreementDataType } from "./types";
+import { fillForm } from "./utils/fillPdfForm";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -89,6 +94,26 @@ app.use("/ads", adsRouter);
 app.use("/xiaohongshu", xiaohongshuRouter);
 
 app.use(goodlifeRouter);
+
+app.post(
+  "/pdf",
+  async (req: Request<any, any, LeaseAgreementDataType>, res: Response) => {
+    const filePath = path.join(__dirname, "./OntarioLeaseAgreement.pdf");
+    const fileContents = fs.readFileSync(filePath);
+    const buffer = Buffer.from(fileContents);
+    const arrayBuffer = buffer.buffer.slice(
+      buffer.byteOffset,
+      buffer.byteOffset + buffer.byteLength
+    );
+
+    const pdfDoc = await PDFDocument.load(arrayBuffer);
+
+    const pdfBytes = await fillForm(req.body, pdfDoc);
+    res.type("application/pdf");
+    res.header("Content-Disposition", `attachment; filename="agreement.pdf"`);
+    res.send(Buffer.from(pdfBytes, "base64"));
+  }
+);
 
 app.listen(PORT, () => {
   console.log(`Express server is listening at ${PORT}`);

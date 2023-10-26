@@ -2,6 +2,7 @@ import { ElementHandle, Page } from "puppeteer-core";
 import { WuyaoReqDataType } from "../types";
 import * as cheerio from "cheerio";
 import axios from "axios";
+import houseData from "./51";
 
 const username = "michael.chi1997@gmail.com";
 const pass = "google@88";
@@ -20,7 +21,12 @@ export const loginTo51 = async (page: Page) => {
   //   await page.waitForNavigation({ waitUntil: "domcontentloaded" });
 };
 
-async function fetchCookiesAndMakeApiCall(page: Page) {
+async function fetchCookiesAndMakeApiCall(
+  page: Page,
+  url: string,
+  method: string
+  // data: any
+) {
   try {
     // Get the cookies from the Puppeteer page
     const cookies = await page.cookies();
@@ -28,8 +34,9 @@ async function fetchCookiesAndMakeApiCall(page: Page) {
     // Prepare the API request headers with the cookies
     const apiRequestHeaders: any = {
       // Set your API endpoint and other necessary headers here
-      url: "YOUR_API_URL_HERE",
-      method: "GET",
+      url: url,
+      method: method,
+      data: houseData,
       // Convert the cookies to a string and set them as a Cookie header
       headers: {
         Cookie: cookies
@@ -51,28 +58,85 @@ async function fetchCookiesAndMakeApiCall(page: Page) {
   }
 }
 
-const clickUnitType = async (
-  btns: ElementHandle<Element>[],
-  unitType: string
-) => {
+const parseUnitType = async (unitType: string) => {
   switch (unitType) {
     case "condo":
     case "apartment":
-      await btns[0].click();
-      break;
+      return "apartment";
     case "house":
     case "detached":
-      await btns[3].click();
-      break;
+      return "detached";
     case "townhouse":
-      await btns[1].click();
-      break;
+      return "townhouse";
     case "semiDetached":
-      await btns[2].click();
-      break;
+      return "semi-detached";
     default:
-      await btns[3].click();
+      return "detached";
   }
+};
+
+const getTodayFormattedDate = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  const formattedDate = `${year}-${month}-${day}`;
+
+  return formattedDate;
+};
+
+const formatWuYaoData = (data: WuyaoReqDataType) => {
+  return {
+    postcode: data.postalCode,
+    streetAddress: data.adAddress,
+    unit: data.adUnit || "",
+    intersection: `${data.intersection1}/${data.intersection2}`,
+    buildingType: parseUnitType(data.unitType),
+    // rentalType
+    bedroomTotal: data.bedrooms,
+    rentalType: data.rentalType,
+    livingRoomTotal: data.livingRooms,
+    latitude: data.latitude,
+    longitude: data.longitude,
+    listingPhotos: data.listingPhotos,
+    denTotal: 0,
+    parkingTotal: data.features.includes("ParkingAvailable") ? 1 : 0,
+    price: data.rent,
+    includesWater: data.features.includes("UtilitiesIncluded"),
+    includesHydro: data.features.includes("UtilitiesIncluded"),
+    includesInternet: data.features.includes("InternetIncluded"),
+    availableAt: data.moveinDate.asap
+      ? getTodayFormattedDate()
+      : data.moveinDate.date,
+    leaseTerm: data.leaseTerm,
+    description: data.htmlDescription,
+    areaUsable: data.area,
+    floor: data.floor,
+    independentKitchen: data.features.includes("PrivateKitchen"),
+    independentBathroom: data.features.includes("PrivateBathroom"),
+    hasBasicFurniture: data.features.includes("Furnished"),
+    includesCable: false,
+    hasLaundry: data.features.includes("LaundryRoom"),
+    hasSwimmingPool: data.features.includes("SwimmingPool"),
+    hasAc: true,
+    hasGym: data.features.includes("Gym"),
+    hasBalcony: data.hasBalcony,
+    targetStudent: data.features.includes("Student"),
+    targetSingleFemale: data.features.includes("SingleFemale"),
+    targetSingleMale: data.features.includes("SingleMale"),
+    targetYoungCouple: true,
+    targetFamily: true,
+    nonSmoker: data.features.includes("NoSmoking"),
+    noPet: data.features.includes("NoPetsAllowed"),
+    infrequentCooking: !data.features.includes("CookingAllowed"),
+    contactName: data.contact,
+    contactNumberPrimary: data.phone,
+    phoneVerifiedCode: "",
+    contactNumberBackup: "",
+    contactEmail: data.email || "",
+    contactWechat: "",
+    wechatQrcode: "",
+  };
 };
 
 // export const create51Rental = async (page: Page) => {
@@ -169,6 +233,25 @@ export const create51Rental = async (page: Page, data: WuyaoReqDataType) => {
       console.log(`Selected city: ${cityText}`);
       break;
     }
+  }
+};
+
+export const create51RentalApi = async (
+  page: Page,
+  data?: WuyaoReqDataType
+) => {
+  if (data) {
+    await page.goto("https://house.51.ca/rental/publish/create");
+
+    await page.waitForNetworkIdle();
+
+    const formattedData = formatWuYaoData(data);
+
+    await fetchCookiesAndMakeApiCall(
+      page,
+      "https://house.51.ca/api/rental/listings?origin=web",
+      "POST"
+    );
   }
 };
 

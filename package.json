@@ -17,6 +17,7 @@
     "form-data": "^4.0.0",
     "formdata-node": "^5.0.1",
     "openai": "^4.11.1",
+    "pdf-lib": "^1.17.1",
     "pg": "^8.11.3",
     "puppeteer-core": "^21.1.1",
     "user-agents": "^1.0.1444"
