@@ -98,7 +98,7 @@ app.use(goodlifeRouter);
 app.post(
   "/leaseAgreement",
   async (req: Request<any, any, LeaseAgreementDataType>, res: Response) => {
-    const filePath = path.join(__dirname, "./OntarioLeaseAgreement.pdf");
+    const filePath = "/app/OntarioLeaseAgreement.pdf";
     const fileContents = fs.readFileSync(filePath);
     const buffer = Buffer.from(fileContents);
     const arrayBuffer = buffer.buffer.slice(

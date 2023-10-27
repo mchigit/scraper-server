@@ -13,6 +13,8 @@ RUN yarn install
 # Copy the source code to the working directory
 COPY . .
 
+COPY OntarioLeaseAgreement.pdf /app/OntarioLeaseAgreement.pdf
+
 # Build the TypeScript code
 
 # Expose the port your Express server is running on
