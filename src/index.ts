@@ -96,7 +96,7 @@ app.use("/xiaohongshu", xiaohongshuRouter);
 app.use(goodlifeRouter);
 
 app.post(
-  "/pdf",
+  "/leaseAgreement",
   async (req: Request<any, any, LeaseAgreementDataType>, res: Response) => {
     const filePath = path.join(__dirname, "./OntarioLeaseAgreement.pdf");
     const fileContents = fs.readFileSync(filePath);
@@ -109,9 +109,15 @@ app.post(
     const pdfDoc = await PDFDocument.load(arrayBuffer);
 
     const pdfBytes = await fillForm(req.body, pdfDoc);
-    res.type("application/pdf");
-    res.header("Content-Disposition", `attachment; filename="agreement.pdf"`);
-    res.send(Buffer.from(pdfBytes, "base64"));
+    // res.type("application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="agreement.pdf"`
+    );
+    res.setHeader("Content-Type", "application/pdf");
+
+    // const pdfBuffer = Buffer.from(pdfBytes, "base64");
+    res.end(pdfBytes);
   }
 );
 

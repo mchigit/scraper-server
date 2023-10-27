@@ -186,7 +186,7 @@ export const fillForm = async (
     form.getRadioGroup("Additional Terms Y/N").select("Choice1");
   }
 
-  const pdfBytes = await pdfDoc.saveAsBase64();
+  const pdfBytes = await pdfDoc.save();
 
   return pdfBytes;
 };
