@@ -145,7 +145,7 @@ export type LeaseAgreementDataType = {
   rentDeposit?: string;
   keyDeposit?: string;
   tenantInsuranceNeeded?: boolean;
-  additionalTerms?: boolean;
+  additionalTerms?: string[];
   utilityIncluded: boolean;
   features?: string[];
 };

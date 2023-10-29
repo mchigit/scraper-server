@@ -7,11 +7,12 @@ import goodlifeRouter from "./routes/goodlife";
 import cors from "cors";
 import { generateDescription } from "./openAi";
 import { PuppeteerBrowser } from "./utils/chrome";
-import { PDFDocument } from "pdf-lib";
+import { PDFDocument, StandardFonts } from "pdf-lib";
 import fs from "fs";
 import path from "path";
 import { LeaseAgreementDataType } from "./types";
 import { fillForm } from "./utils/fillPdfForm";
+import { signClause } from "./utils/additionalTermsUtil";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -46,19 +47,34 @@ app.post("/rental-description", async (req, res) => {
 });
 
 app.post("/test", async (req, res) => {
-  const page = await PuppeteerBrowser.getNewPage();
+  const termsSignPDF = await PDFDocument.create();
+  const timesRomanFont = await termsSignPDF.embedFont(StandardFonts.TimesRoman);
+  const timesRomanBold = await termsSignPDF.embedFont(
+    StandardFonts.TimesRomanBold
+  );
 
-  if (!page) throw new Error("Failed to get new page");
+  const signPage = termsSignPDF.addPage([550, 750]);
+  const form = termsSignPDF.getForm();
 
-  await page.goto("https://cbaapps.org/ClassAction/Search.aspx");
-
-  const response = await page.screenshot({ fullPage: true });
-
-  res.writeHead(200, {
-    "Content-Type": "image/png", // or 'image/jpg', 'image/gif', etc.
-    "Content-Length": response.length,
+  const fontSize = 16;
+  signPage.drawText("Tenant(s):", {
+    x: 50,
+    y: 700,
+    size: fontSize,
+    font: timesRomanBold,
   });
-  res.end(response);
+
+  const superheroField = form.createTextField("tenant.name");
+  superheroField.setText("");
+  superheroField.addToPage(signPage, { x: 50, y: 650 });
+
+  const pdfBytes = await termsSignPDF.save();
+
+  res.setHeader("Content-Disposition", `attachment; filename="agreement.pdf"`);
+  res.setHeader("Content-Type", "application/pdf");
+
+  // const pdfBuffer = Buffer.from(pdfBytes, "base64");
+  res.end(pdfBytes);
 });
 
 app.get("/scrape-data", async (req, res) => {
