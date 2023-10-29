@@ -1,4 +1,4 @@
-import { PDFDocument } from "pdf-lib";
+import { PDFDocument, PDFForm } from "pdf-lib";
 import { LeaseAgreementDataType, LeaseAgreementTermType } from "../types";
 
 const getTodayFormattedDate = () => {
@@ -11,17 +11,10 @@ const getTodayFormattedDate = () => {
   return formattedDate;
 };
 
-export const fillForm = async (
+const fillLandlordTenantInfo = (
   data: LeaseAgreementDataType,
-  pdfDoc: PDFDocument
+  form: PDFForm
 ) => {
-  const form = pdfDoc.getForm();
-  const allFields = form.getFields();
-
-  allFields.forEach((field) => {
-    console.log(field.getName());
-  });
-
   const maxLandlord = data.landlords.slice(0, 2);
   maxLandlord.forEach((landlordName, index) => {
     form.getTextField(`Landlord ${index + 1} Name`).setText(landlordName);
@@ -56,7 +49,12 @@ export const fillForm = async (
       .getTextField(`Signature ${index + 1} Date`)
       .setText(getTodayFormattedDate());
   });
+};
 
+const fillRentalPropertyInfo = (
+  data: LeaseAgreementDataType,
+  form: PDFForm
+) => {
   if (data.isCondo) {
     form.getRadioGroup("Condo Yes").select("Choice1");
   } else {
@@ -79,7 +77,9 @@ export const fillForm = async (
       form.getTextField("Vehicle Details").setText(data.vehicleDescription);
     }
   }
+};
 
+const fillContactInfo = (data: LeaseAgreementDataType, form: PDFForm) => {
   if (data.landLordAddress) {
     if (data.landLordAddress.unit) {
       form
@@ -115,7 +115,9 @@ export const fillForm = async (
   if (data.landlordPhone) {
     form.getTextField("Emerge Contact Phone").setText(data.landlordPhone);
   }
+};
 
+const fillTermAndRentInfo = (data: LeaseAgreementDataType, form: PDFForm) => {
   form.getTextField("Tenancy Start Date").setText(data.agreementStart);
 
   form.getRadioGroup("Term Type").select(data.termType);
@@ -146,7 +148,9 @@ export const fillForm = async (
   } else {
     form.getTextField("Rent Payee Method").setText("Post-dated Cheques");
   }
+};
 
+const fillPartialMonthInfo = (data: LeaseAgreementDataType, form: PDFForm) => {
   if (data.partialMonth) {
     form.getTextField("Prorated Amount").setText(data.partialMonth.partialRent);
     form
@@ -157,7 +161,9 @@ export const fillForm = async (
       .setText(data.partialMonth.coveredFrom);
     form.getTextField("Prorated Date End").setText(data.partialMonth.coveredTo);
   }
+};
 
+const fillDepositInfo = (data: LeaseAgreementDataType, form: PDFForm) => {
   if (data.rentDeposit) {
     form.getTextField("LMR Amount").setText(data.rentDeposit);
     form.getRadioGroup("LMR Deposit Y/N").select("Choice2");
@@ -171,6 +177,53 @@ export const fillForm = async (
   } else {
     form.getRadioGroup("Key Deposit Y/N").select("Choice1");
   }
+};
+
+const fillServicesAndUtil = (data: LeaseAgreementDataType, form: PDFForm) => {
+  console.log(form.getRadioGroup("Gas YESNO").getOptions());
+
+  form.getRadioGroup("Gas YESNO").select("Choice1");
+  form.getRadioGroup("AC YESNO").select("Choice1");
+  form.getRadioGroup("STORAGE YESNO").select("Choice2");
+
+  form.getRadioGroup("Laundry YESNO").select("Choice1");
+  form.getRadioGroup("Parking Provided YESNO").select("Choice2");
+
+  if (data.utilityIncluded) {
+    form.getRadioGroup("Electricity Responsibility L/T").select("Choice1");
+    form.getRadioGroup("Heat Responsibility L/T").select("Choice1");
+    form.getRadioGroup("Water Responsibility L/T").select("Choice1");
+    form.getRadioGroup("Water Heater Responsibility L/T").select("Choice1");
+  } else {
+    form.getRadioGroup("Electricity Responsibility L/T").select("Choice2");
+    form.getRadioGroup("Heat Responsibility L/T").select("Choice2");
+    form.getRadioGroup("Water Responsibility L/T").select("Choice2");
+    form.getRadioGroup("Water Heater Responsibility L/T").select("Choice2");
+  }
+};
+
+export const fillForm = async (
+  data: LeaseAgreementDataType,
+  pdfDoc: PDFDocument
+) => {
+  const form = pdfDoc.getForm();
+  const allFields = form.getFields();
+
+  allFields.forEach((field) => {
+    console.log(field.getName());
+  });
+
+  fillLandlordTenantInfo(data, form);
+  fillRentalPropertyInfo(data, form);
+  fillContactInfo(data, form);
+
+  fillTermAndRentInfo(data, form);
+
+  fillPartialMonthInfo(data, form);
+
+  fillDepositInfo(data, form);
+
+  fillServicesAndUtil(data, form);
 
   form.getRadioGroup("Smoking Rulet Y/N").select("Choice1");
 
