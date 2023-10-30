@@ -127,16 +127,41 @@ app.post(
 
     const pdfDoc = await PDFDocument.load(arrayBuffer);
 
-    const pdfBytes = await fillForm(req.body, pdfDoc);
-    // res.type("application/pdf");
+    const pdfs = await fillForm(req.body, pdfDoc);
+
+    const mergedPdf = await PDFDocument.create();
+
+    const copiedPagesA = await mergedPdf.copyPages(
+      pdfs.pdfDoc,
+      pdfs.pdfDoc.getPageIndices()
+    );
+    copiedPagesA.forEach((page) => mergedPdf.addPage(page));
+
+    if (pdfs.termsPdf) {
+      const copiedPagesB = await mergedPdf.copyPages(
+        pdfs.termsPdf,
+        pdfs.termsPdf.getPageIndices()
+      );
+      copiedPagesB.forEach((page) => mergedPdf.addPage(page));
+    }
+
+    if (pdfs.termsSignPDF) {
+      const copiedPagesC = await mergedPdf.copyPages(
+        pdfs.termsSignPDF,
+        pdfs.termsSignPDF.getPageIndices()
+      );
+      copiedPagesC.forEach((page) => mergedPdf.addPage(page));
+    }
+
+    const mergedPdfFile = await mergedPdf.save();
+
     res.setHeader(
       "Content-Disposition",
       `attachment; filename="agreement.pdf"`
     );
     res.setHeader("Content-Type", "application/pdf");
 
-    // const pdfBuffer = Buffer.from(pdfBytes, "base64");
-    res.end(pdfBytes);
+    res.end(mergedPdfFile);
   }
 );
 

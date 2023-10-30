@@ -14,6 +14,7 @@ RUN yarn install
 COPY . .
 
 COPY OntarioLeaseAgreement.pdf /app/OntarioLeaseAgreement.pdf
+COPY additional-terms-sign.pdf /app/additional-terms-sign.pdf
 
 # Build the TypeScript code
 

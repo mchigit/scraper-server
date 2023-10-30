@@ -1,7 +1,8 @@
-import { PDFDocument, PDFForm, StandardFonts } from "pdf-lib";
+import { PDFDocument, PDFForm } from "pdf-lib";
 import { LeaseAgreementDataType, LeaseAgreementTermType } from "../types";
-import { generateAdditionalTerms, temp_clauses } from "./additionalTermsUtil";
+import { generateAdditionalTerms } from "./additionalTermsUtil";
 import { PuppeteerBrowser } from "./chrome";
+import path from "path";
 import fs from "fs";
 
 const getTodayFormattedDate = () => {
@@ -236,11 +237,13 @@ export const fillForm = async (
     form.getRadioGroup("Insurance Required Y/N").select("Choice1");
   }
 
+  let termsPdf: PDFDocument | null = null;
+  let termsSignPDF: PDFDocument | null = null;
+
   if (data.additionalTerms) {
     form.getRadioGroup("Additional Terms Y/N").select("Choice2");
     const termsHtml = generateAdditionalTerms(data.additionalTerms);
 
-    console.log(termsHtml);
     const page = await PuppeteerBrowser.getNewPage();
 
     if (page) {
@@ -249,35 +252,32 @@ export const fillForm = async (
       const termsPage = await page.pdf({
         format: "A4",
         printBackground: true,
-        path: "terms.pdf",
       });
 
-      const termsPdf = await PDFDocument.load(termsPage);
-      const termsSignPDF = await PDFDocument.create();
-      const timesRomanFont = await termsSignPDF.embedFont(
-        StandardFonts.TimesRoman
+      termsPdf = await PDFDocument.load(termsPage);
+      await PuppeteerBrowser.disconnect();
+
+      const filePath =
+        process.env.NODE_ENV === "development"
+          ? path.join(__dirname, "../../additional-terms-sign.pdf")
+          : "/app/additional-terms-sign.pdf";
+      const fileContents = fs.readFileSync(filePath);
+      const buffer = Buffer.from(fileContents);
+      const arrayBuffer = buffer.buffer.slice(
+        buffer.byteOffset,
+        buffer.byteOffset + buffer.byteLength
       );
 
-      const signPage = termsSignPDF.addPage();
-      const { width, height } = signPage.getSize();
-      const fontSize = 16;
-      signPage.drawText("Creating PDFs in JavaScript is awesome!", {
-        x: 50,
-        y: height - 4 * fontSize,
-        size: fontSize,
-        font: timesRomanFont,
-      });
-
-      const pdfBytes = await termsSignPDF.save();
-
-      await PuppeteerBrowser.disconnect();
+      termsSignPDF = await PDFDocument.load(arrayBuffer);
     }
     // const termsPage = await pdfDoc.embedPages()
   } else {
     form.getRadioGroup("Additional Terms Y/N").select("Choice1");
   }
 
-  const pdfBytes = await pdfDoc.save();
-
-  return pdfBytes;
+  return {
+    pdfDoc,
+    termsPdf,
+    termsSignPDF,
+  };
 };
